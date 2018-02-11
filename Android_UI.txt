@@ -1,0 +1,524 @@
+!!! 所有界面设计均使用伪代码展现，这个文档决定了 API设计 和 服务端应该保存的内容
+!!! 版本：GeekMarket v0.1.0 'GingerBread'
+
+GeekCode：类似这样的一种 Key-Value字符串 表示形式 \
+          '&' key '@' value '!&' \
+          一般用于插入在消息中，与插件系统和 Markdown 集成，动态生成内容。 \
+          语法上允许嵌套(虽然不常用)，内层的 GeekCode 必须先完成替换。 \
+          例子：&em@doge/smile!& &geekapp@12!& &comment@12.2!& &user@1!&
+GeekURL： 类似这样的一种 Key-Value字符串 表示形式 \
+          key ':' value \
+          一般用于添加外部资源引用。 与插件系统的 GeekURL Opener 集成。 \
+          例子：httpdl://foo.server/app.apk coolapk:com.coolapk.market follow:1 gplay:org.geekapk.market \
+          请注意，应用操作（安装、卸载）成功与否也是由 GeekURL Opener 决定的。GeekURL Opener 也可以手动刷新安装状态。 \
+          客户端应该在应用管理中加入自动刷新所有本机应用安装状态的功能。
+
+
+消息菜单：对于发布者不是自己的消息 \
+         自由复制、复制内容、复制用户名、分享、计算发送时的应用版本、查看详细时间 \
+         对于是自己的消息，额外增加 \
+         删除、修改 \
+         pin 消息需要 moderator 身份和内部机器人，第一版不存在这两个概念，故这个功能暂不开放。(删掉 \
+         应用主可以自由 pin/unpin 自己应用下的评论
+
+搜索：搜索应用 := 在应用名、别名、包名、描述中查找 \
+      搜索用户 := 查找用户名、用户别名、bio \
+      搜索评论 := 查找消息内容 \
+      搜索全站 := (不允许) \
+      搜索好友圈 := (不允许) \
+      搜索用户动态 := (在对应应用中搜索 uid 为这个用户 uid 的评论) \
+      新闻/头条/话题 := 相应分类/应用中搜索
+
+基础视图(其他视图里经常会引用到的信息列表类视图)：
+ Comment：
+  [用户头像] [用户名] (目标名)
+  [Markdown 内容]
+  (pinned?) [时间] (changed?) - [Stars] [赞] [回复]
+  [点赞列表]
+  [子评论列表]
+  ----
+  [用户头像]：圆形剪裁的用户头像缩略图，用户头像应该缓存至少 3 天。 { click = (see below)
+  [用户名]：用户的主要名称，应该缓存至少 1 小时。 { click = 打开用户详情页面
+  [目标名]：如果不是动态，显示目标名（一般是应用名），如果是回复，显示回复用户的名称。
+  [Markdown 内容]：Markdown 排版的消息内容，其中可以含有 ^GeekCode^。 { click = 进入消息详情页面，此时所有子评论变为 Comments。 longclick = 打开 ^消息菜单^
+  [pinned?]：如果这条消息被应用 pin，显示 (钉子图标)
+  [时间]：简写的时间，间隔时间短可以使用 '19分钟前' 这种表达方式，否则使用 '17 5月`2日' '5月2日' 表示。
+  [changed?]：如果这条消息的 updated 字段不为空，显示 '已编辑' 字样。
+  [Stars]：(星星图标) [star 数目] { click = 增加一颗 star longclick = 查看哪些人 star 了这个消息 (UserListActivity, 需要带有 'followed' Filter)
+  [赞]：(+1 图标) [count 数目] { click = 增加一个赞
+  [回复]： (评论图标) [回复数] { click = 快速回复
+  [点赞列表]：（+1 图标） [点赞者主要名称 以 '、' 切分的列表 点赞时间排序] { click = 查看哪些人 +1 了这个消息 (UserListActivity, 需要带有 'followed' Filter
+  [子评论列表]：[评论人主要名称] '：' [评论内容] { click = 进入消息详情页面，此时所有子评论的子评论变为 Comments。 longclick = 打开 ^消息菜单^ \
+               长度不能超过设置的预览长度，使用时间排序。如果有评论超过设置的字数限制，对它进行剪裁。剪裁的消息后必须添加 '[...]'
+ Comment_Detail：
+  Comment
+  ----
+  修改：
+   Comment 应该占满整个布局
+   子评论列表此时变为 Comments。
+ Comments：
+  Filter -> pinned followed user
+  排行 -> star count replies created updated !允许倒序
+  [Comment 列表]
+ User：
+  [用户头像] [用户名] - (跟随)
+  ----
+  { click = 打开用户详情 longclick = 菜单 [ 复制 ID、复制用户名、打开对应应用、跟随|取消跟随、查看 GitHub ]
+  [跟随]：部分情况（如 Stargazers 中）可以不显示 { click = 跟随这个用户 | 取消跟随这个用户 if 已经跟随
+ Users：
+  Filter -> 超级用户? 填写 email? 填写 bio? 有别名? 已经跟随?
+  排行 -> 创建时间 上线时间 跟随数 被跟随数 !允许倒序
+  [用户列表]
+ App：
+  [图标]
+  [名称]
+  [更新时间]
+  [评分] [star]
+  ----
+  { click = 查看详细信息 longclick = 菜单 [ 查看包名(包含包名、上架时间、更新时间) Star 赞赏 ]
+ Apps：
+  Filter -> (不适用)
+  排行 -> updated
+  (横排) [App 列表]
+ App_With_Info：
+  [图标] [名称] [别名] [操作按钮]
+  [更新时间] [版本] [评分数] '/' [综合评分] [最低 Android API 版本] [体积]
+  [stars] [评论数] [赞数] (special)
+  ----
+  { click = 查看详细信息 longclick = 菜单 [ [使用特定 AppLayout 打开] 分享 复制应用ID 查看包名 复制应用名 Star 赞赏 提交者(删除应用 修改应用 发布新版本) ]
+  [别名]：应用别名
+  [更新时间]：应用更新时间
+  [版本]：版本号
+  [评分数]：评分人数
+  [综合评分]：计算出的综合评分 (1-10)
+  [最低 Android API 版本]：最低支持的 Android API 版本(转换到自然语言，格式可以在设置中变动)
+  [体积]：应用填表的安装包体积大小
+  [评论数]：评论表长度
+  [special]：应用可以填写特殊字符串，将以特殊颜色 '[' special_string ']' 展现
+  [操作按钮]：应用可以填写用于替换默认 "安装" 和 "卸载" 的字符串 { click = 执行安装或卸载使用的 GeekURL longclick = 菜单 [ 刷新安装状态 运行安装 运行卸载 重新安装 ]
+ App_With_Infos：
+  Filter -> category、最低 Android API 范围、更新时间范围、需要 root?(三种情况)、需要触摸屏？、需要特殊框架?、你发布的？
+  排行 -> star count replies rank rank_avg created updated size !允许倒序
+  [App_With_Info 列表]
+
+SplashActivity：
+ [GeekApk 标准图标]
+ |
+ [GeekApk 艺术字体]
+ ----
+ 启动屏幕抄袭 Google Translate（
+ 启动屏幕的时间是可以自己在设置中变动的（或者关闭）
+
+MainActivity：
+ C0P0(主页)：
+  Toolbar -> [GeekApk 艺术字体] - [搜索图标] [通知图标] [下载管理图标]
+  底栏 -> *[主页]* [应用] [社区] [我]
+  -- Badge 头条 --
+  -- 最近更新和最新上架应用 --
+  -- 图像头条 --
+  -- 标签头条 --
+  -- 最热话题 --
+  -- 最热应用 --
+  -- 最热应用集 --
+  -- 最新新闻 --
+  -- 最热全站 --
+  ----
+  [--*--]：你们都是在设置中可以设置位置/显示不显示的，也可以有自己的设计。实现时必须考虑未来的插件系统，同时，主页本身也允许关闭。
+  [GeekApk 艺术字体]：仿照 Google Translate 艺术字体。
+  [搜索图标]：{ click = 打开快速搜索，允许可以设置的记录历史。
+  [通知图标]：如果有通知，将空心铃图标变为实心，也可以选择酷安 v8/v7/v6 的展现方式 !需要即时更新 { click = 打开通知中心
+  [下载管理图标]：如果有下载，将空心下载图标变为实心，也可以选择酷安 v8/v7/v6 的展现方式 { click = 打开下载中心
+  (底栏)：抄 F-Droid 就行，注意动画也得抄，而且动画时间/是否开启在设置中可调。当然也可以选择是否开启底栏。
+  [0]：抄酷安的就行，请参考 CoolMarket v6，另外如果酷安的人看到了也不要以为这是你们的原创，自己的创意被抄袭。!需要即时更新 { click = 执行相应 GeekURL
+  [1]：^(Apps)^ 修改： 是全站的所有应用，更新时间/创建时间排行，设置中可以变动显示数目。!需要即时更新
+  [2]：一个图像头条大概等于有图片的标签头条。具体怎么做 Android 开发者应该很拿手的，!需要即时更新 { click = 执行相应 GeekURL
+  [3]：[badge] [dsec]
+   ----
+   { click = 执行相应 GeekURL longclick = 菜单 [ 详细信息(包含 badge 内容和 desc 内容, GeekURL 和创建时间) 分享 ]
+   [badge]：短小的字符串，简洁描述内容，自然语言。
+   [desc]：自然语言，应该是 badge 描述的扩充。
+  [4]：^(Apps)^ 修改：以 Star 数目排行，Filter 为话题特殊分类。 可以设置选择长度，!需要即时更新
+  [5]：(参考上) 修改：去掉 Filter，以点赞数目排行
+  [6]：(参考上) 修改：Filter 为应用集特殊分类，!需要即时更新
+  [7]：^(Comments)^ 显示新闻特殊应用里的评论，!需要即时更新
+  [8]：^(Comments)^ 修改：点赞数目排行
+
+ C1P0(分类)：
+  这是一个值得讨论的页面呢，主要设计参考 CoolMarket v6
+  Toolbar -> 搜索，这个和主页的搜索没有区别
+  底栏 -> 我不用解释了，看上面的（下面都不解释了，一样的）
+  这个你们就参考 CoolMarket v6 的设计就行了，需要注意的几点是：
+   GeekApk 使用了 3 层分类，或者说，是 2 层分类加上一个分类描述(大概就是 "父分类的分类")，但后端描述实际上层数是没有限制的（一种简单的 "继承" 模式）。客户端必须考虑到超过三层的情况
+   ... 一般来说，不足三层的情况不会对构造用户界面有影响，而如果遇到超过三层的情况，客户端应该拒绝构建相应用户界面并使用含有错误提示的文本框代替。（即使选用的排版方式允许显示无限层数的分类）
+   分类模型和酷安唯一的区别就是增加了一个 "分类标签"，而不是酷安的 应用/游戏，客户端可以使用类似 Markdown(不使用类似 v6 的分页) 的方式排版，也可以使用 v6 的排版方式。
+
+ C1P1(排行)：
+  Toolbar -> Filter, 排序选择 （就是下面 App_With_Infos 那个）
+  ^(App_With_Infos)^
+
+ C1P2(应用集)：
+  Toolbar -> [搜索] [排序] [Filter]
+  Fab := 快速建立应用集
+  [热门应用集]
+  [应用集排行]
+  ----
+  [搜索]：SearchActivity 搜索应用集，界面参考主界面搜索
+  [热门应用集]：^(Apps)^ 可调显示数目。
+  [应用集排行]：^(App_With_Infos)^ 修改：Filter 不允许选择 category
+
+ C1P3(Stared)：
+  快速描述：^(App_With_Infos)^ 显示用户 Star 的应用，允许客户端自行按应用名搜索
+
+ C1P4(发布)：
+  这是个最有意思的界面了，可能也是最不像 CoolApk 的（酷安的 Android客户端 是不能创建应用的）。
+  在 GeekApk 里，创建一个应用是不需审核的。正因如此，GeekApk 中 "应用" 是一个非常泛泛的概念，应用集和话题都是应用。
+  Toolbar -> [搜索] [Filter] [排行]
+  Fab := 创建应用(AppEditorActivity)
+  ^(App_With_Infos)^ 显示你的所有应用，允许客户端自行按照应用名搜索
+
+ C2P0(话题)：
+  Toolbar -> [搜索] [排序] [Filter]
+  Fab := 快速创建话题 (可填名称、图标、描述)
+  ^(App_With_Infos)^ 修改：category Filter 使用话题特殊分类，不允许手动选择 category Filter
+  [搜索]：SearchActivity... 请注意所有默认类型不同的搜索历史必须分开保存。 设置里允许快速清空历史记录。
+
+ C2P1(新闻)：
+  Toolbar -> [搜索] [排序] [Filter]
+  Fab := 新建新闻
+  [搜索]：应用内搜索新闻特殊应用 所有评论
+  ^(Comments)^ 修改：显示新闻特殊应用里的所有评论
+
+ C2P2(头条)：
+  Toolbar -> [搜索] [查看历史头条]
+  [查看历史头条]：按时间排序显示所有历史头条(badge, labeled, with_pic)
+
+ C2P3(全站)：
+  由于后端设计特殊性，全站排行不能是实时更新的(并且，只能使用赞排序)。只能选择每 10 分钟重新排序一次缓存。
+  也不能进行全站检索，但可以使用时间 Filter, 其他 Comments 排序/Filter 功能都不能使用。
+  Toolbar -> [时间段] [使用赞赏排序？]
+  [时间段]：{ click = 选择时间段 longclick = 倒序
+  [使用赞赏排序？]：Android 开发者们应该知道怎么做（
+
+ C2P4(动态)：
+  请把它理解为：另外一个独立的全站 -- 用户界面也是几乎一样的，怎么改聪明的 Android Dev 都知道 -- 一行字。
+  后端使用完全一样的两个表储存他们，表里只包含了消息索引和时间（这也是排行不能实时的原因）
+  数据结构一样，服务端对待方式也几乎一样。你可以选择对于自己的每一个消息发不发送到全站，同样对动态有效。
+  但是，对你的所有评论都可以选择不发送全站，动态只有你评论自己的 "超级应用" 时才可以选择不记录，其他不是真正动态的消息不能加入全站动态记录。
+  用户当然可以随时任意变动自己的 super_app, 所以当然可以随意越过这个限制（ 不过管他呢，就当是一种 "不推荐" 而已
+
+ C2P5(好友圈)：
+  Toolbat += [uid Filter]
+  后端使用与上面两位几乎完全相同的数据结构 （除了增加 uid 字段）
+  用户界面设计参考上面两个。允许使用 uid Filter.
+  后端的处理是：每个用户都有自己的好友圈记录，每个用户评论自己的 super_app 时都可以额外选择是否通知所有 Follower (在处理用户动态和普通评论时使用的是不同的 API)，也可以选择只通知好友，或者都不。
+   服务器将会按要求向每个 Follower 的好友圈记录里放入相应消息记录。
+
+ C3P0(我)：
+  Toolbar -> [设置] [通知] [下载管理]
+  [顶栏]
+  -- 修改资料 --
+  -- 好友 --
+  -- 星标消息 --
+  -- 通知中心 --
+  -- 应用管理 --
+  -- 主题风格 --
+  -- 设置 --
+  -- 关于 --
+  -- 退出登录 --
+  ----
+  [顶栏]：
+   [用户头像] [用户名] [别名] [github]
+              [bio]
+              (email icon) [online?] [follow/followers]
+   ----
+   [github]：用户的 GitHub 用户名 { click = 打开 GitHub 链接
+   [email icon]：如果用户存在邮箱就显示 { click = 显示邮箱信息
+   [online?]：显示上次上线时间 { click = 显示隐身状态/更新上线时间对话框 隐身状态：关闭 WebSocket 连接 \
+   (服务端发送更新提示提供了 FPM 和 WebSocket 两种方式，WebSocket 连接活跃意味着用户在线，上线 API 返回当前时间，否则，返回上一次更新的时间。 \ 
+   客户端每隔 5m 都会更新是上线时间，隐身模式下，不更新上线时间、断开 WebSocket。)
+  [修改资料]：对话框 %TextField[ 用户名 别名 邮箱 ] < 修改密码 修改头像 取消 更新
+  [星标消息]：UserDetailActivity, 你, Star 的消息的快捷方式。
+  [应用管理]：AppManagementActivity
+  [主题风格]：选择 MD 颜色配色方案，长按开启夜间模式
+  [关于]：打开 SettingsActivity 的 About 页面
+  [退出登录]：确认退出当前帐号，重新启动应用。
+
+UserListActivity：
+ 用来选择用户，可以接收一个提示文字、一个 uid 列表、排行方式、Filter
+ 返回选择的 uid
+ Toolbar -> [搜索] [排行] [Filter]
+ ^(Users)^
+
+CategorySelectActivity：
+ 返回选择的 cid
+ 长按分类可以查看分类详情 （对话框）
+ 用来选择 Category。可以接受一个父分类或一个大分类 ID, 以达到只显示其子分类的目的。
+ 就是全屏幕化的 MainActivity 的 Categories.
+
+SearchActivity：
+ 接受搜索内容，Filter 和排行方式
+ 搜索结果的活动。标题应该是 '搜索结果：' 搜索字符串
+ Toolbar -> [搜索] [Filter] [排行]
+ 搜索对象页面 -> [应用] [用户] [话题] [新闻] [应用集] [头条]
+ 搜索页 -> ^(App_With_Infos)^ | ^(Users)^ | ^(App_With_Infos)^ | ^(Comments)^ | ^(App_With_Infos)^ | (全部类型头条展现方式)
+ !搜索键长按以使用客户端再次检索
+
+CategoryActivity：
+ 在分类 A 中查看其包含应用的活动（
+ 接受 cid (分类 ID), Filter 和 排行方式
+ 标题名为分类名
+ 长按标题可以查看分类详情 ( 名称, cid, 应用数， 描述 )
+ ^(App_With_Infos)^
+
+MessageDetailActivity：
+ 接受一个 aid, 一个 rid，另外还能接受子评论 Filter 和排行方式。
+ 另外标题要含有回复位置的应用名和评论/回复信息
+ 子评论 Filter/排行、点赞Star 按钮放在 Toolbar 上还是消息下面自己考虑
+ 全屏幕的 Comment. 具体布局复制 CoolApk v6. (下面最新几个点赞的要加上啊...)
+ 操作不能比非全屏幕的 Comment 少。 (没错，别抄 CA 把 GA 自己的功能抄丢了，CA v6 比我们简单好多倍
+ Comment 回复应该放在这个 Comment 下方，消息查看是递归模式的，只能多看两层，不能同时看回复的回复的回复（晕）。
+ 换句话说你能看这个评论，它的回复，它的回复的回复。它的回复和顶层评论一样,都只能看一层回复。
+  (A :顶层评论
+   (回复了 A: emmm <- 点开 
+     ~~ (回复了上面的: hhhh 不可见! ~~
+   (回复了 A
+  ->
+  (emmm : 新顶层评论
+  ... 它的回复 ...
+（比如，这个例子中子评论的子评论可能还有子评论，但必须把子评论的子评论新开一个 MessageDetail 才能看得更深。
+
+AppDetailActivity：
+ 接受一个 aid，还可以接受默认的页面和评论排行/Filter，覆盖的 AppLayout 和操作名/reversion
+ 应用模型是 GeekApk 里最复杂的模型之一，因为保存的数据很多。 
+ Basic AppLayout：
+  Title := 应用名称
+  Fab := 下载应用
+  Toolbar -> [Star] [+1]
+  页面 -> 详细信息：
+   Menu -> 分享、总复制对话框、重新安装、（如果是应用主）修改应用、去 Play 查看 (需要考虑插件系统)
+   [Head]：包含 图标、应用名、别名、体积、Special、更新时间、最低 API、版本、语言、[下载] 信息 { longclick = 复制名称/复制包名/复制链接
+    [下载]：使用操作明作为文字 { click = 下载 longclick = 查看 下载/卸载 GeekURL 信息
+   [Previews]：预览图，后端最多允许 10 个。 { click = ImageViewActivity 预览 longclick = 选择查看信息 (图片大小、体积、保存、上传时间)
+   [Rank]：布局类似 CA v6，多加一个点赞和 Star，以及推荐给其他应用 { click = 快速转到全部打分页面
+   [小编点评]：有 base version 和更新特定点评的区别。 可能会有两个 { longclick = 复制菜单 [ 全部复制 自由复制 ]
+   [Updates]：参考 CA v6 (包含新版本号、更新时间、更新信息) { longclick = 复制菜单
+   [简介]：必须支持 GeekCode 和 Markdown { 复制...
+   [Infos]：包含 源码地址、网站地址、需要触摸屏？、需要 root？（三种情况：必须、非刚需、无需）、语言、开发者、提交者、
+            许可证、更新记录、权限（按行分，允许使用权限 ID 替换形式 ':' 权限id ） { 复制 [ 开发者ID,、开发者名、权限信息、链接 ]
+   [pinned Comments]：应用主 pin 的回复， ^(Comments)^，使用时间排序，不能使用 Filter(因为都没地方调) (!可以在设置中禁用)
+
+   评论：
+    Toolbar -> (不用多解释了)
+    ^(Comments)^
+
+   推荐应用：
+    Fab := 添加推荐 (从自己的 Star 从自己发布的 从一个分类 搜索) { longclick = 添加带有理由的推荐
+    ^(App_With_Infos)^
+
+   被推荐应用：
+    ^(App_With_Infos)^ 只看应用集（添加 category Filter）快捷 Toolbar
+
+   开发者其他应用：
+    ^(App_With_Infos)^
+
+   版本：
+    抄 CA v6 就行。后端会保留所有版本的图标(建议尽可能简单，不要显示图标)，可以考虑不添加排行功能
+
+   评分：
+    显示所有评分的用户， ^(Users)^ 和他们的评分
+    怎么做可以自己想
+
+   Star：
+    ^(Users)^ 显示所有 Star 了的用户
+   
+ Album AppLayout：
+  应用主显示新增应用 Fab
+  建议客户端设计者每人都临时下载一个 CA v6, 方便抄界面 （笑）
+  设计上只比 CoolApk 多了一个 Star 数目统计
+
+  请这样映射应用集信息：
+   所有推荐应用 -> 这个应用所有应用提交者的推荐
+   desc -> 应用集描述
+   评论 -> 应用集合评论
+   赞/Star -> 应用集赞/Star
+
+  GeekApk 使用了推荐系统完成带特殊注释应用列表的工作，也因为如此推荐系统加入了 "推荐理由" 一项。
+
+ Topic AppLayout：
+  (如你所见) 就是只让人看到评论、简介和图标的应用布局了
+  没有需要更多解释的，抄吧
+
+AppSelectActivity：
+ 必须... 接受 aid 列表或者 cid
+ 返回选择的 aid
+ 界面抄 UserSelect 吧，允许客户端自行搜索/服务端(cid) 名字和包名
+
+AppEditorActivity：
+ 接受 aid 和 aid 的 reversion
+ 首先我不得不告诉你们，应用到底包含什么需要填写的字段...
+ 1. 当然是特殊信息：applayout
+    例子： ""(默认app) "app" "topic" "album" "channel" "geekbook" "music"
+
+ 2. 一样是，opbtn 。 这个用来覆盖原有的 '安装', '卸载', '正在安装'。字符串，包含用 '\t' 切分的三个替换字符串
+    例子： "女装\t男装\t正在女装QAQ" "关注\t取消关注" "好耶"
+
+ 3. 下载的特殊字段, installurl
+    例子： "follow:32" "geekapp:3" "geekapk_view:news" "httpdl+chk:746308829575e17c3331bbcb00c0898b://nico.mengmeng/stytool.apk" "gpaly:kh.android.dir"
+
+ 4. 卸载的特殊字段，removeurl
+    例子： "delapp:android" "delapp:nico.styTool" "delapp:org.duangsuse.minb64" "unfollow:12"
+
+ 5. 最多 10 个的预览图像，一张大小最大不能超过 500k (当然，管理可以帮你解决这个限制, 我是说他们可以帮你上传图片)
+ 6. 最低 Android API，必须是正整数
+ 7. reversion, 这个一般只会在新建版本里出现，也是客户端判断应用是否有更新的标准 必须是正整数但的确没有其他限制(
+ 8. version 字符串
+ 9. 按 KiB 计算的 size，当然是随便填，正整数
+ 10. special，你认为有什么特殊的就放上去吧（建议是 Xposed, TV 这样的情况），还记得酷安的 '交易' 吗？ 现在这些是你自己的交易了。（滑稽）
+ 11. 应用图标，这个是分版本的
+ 12. 简介字符串
+ 13. 更新，当然是分版本的。
+ 14. 应用名/别名
+ 15. 语言代码（ 例如 "zh_CN" "en_US"
+ 16. 包名
+ 17. 源码（如果有）地址/网站地址
+ 18. 真实开发者 描述
+ 19. 许可证
+ 20. 权限, 以 '\n' 划分。 客户端可以允许快速的应用创建流程（自动收集填写部分信息）
+ 21. root 需要程度、触摸屏和额外框架需求
+
+ Types：
+  Versioned Graph(max=50k) icon
+  Nonnull String(max=100) pkgname
+  Nonnull String(max=50) name
+  Versioned String(max=50) alias
+  Nonnull String(max=10) applayout
+  Versioned String(max=20) optbtn
+  Versioned String(max=10k, utf-8) installurl
+  Versioned String(max=10k, utf-8) removeurl
+  GraphSet(max=500k, maxlen=10) previews
+  Versioned Positive Integer8 apimin
+  Versioned Positive Integer size
+  Versioned String(max=30) version
+  Versioned Nonnull Positive Integer16 reversion
+  Versioned String(10) special
+  String(2000) desc
+  Versioned String(1000) updates
+  String(10) lang
+  String(100) srcurl
+  Versioned String(100) homeurl
+  String(25) dev
+  Versioned String(10) license
+  String(2000) perm
+  Enum{rely,need,ignore} root
+  Versioned Bool touch
+  Bool framework
+ 完成了，界面自己安排吧 (>_>)
+ 另外建议把新建版本放在 Toolbar 上
+
+LoginActivity：
+ 页面(2) ->
+  首页(登录)：
+   Toolbar -> 注册 根据用户名查找用户
+   Fab -> 登录
+   [用户图标] %TextField[用户名]
+   [密码图标] %TextField[密码]
+   ----
+   [用户图标]：{ longclick = 选择格式 (用户名、用户别名、ID)
+   [密码图标]：{ longclick = 选择格式 (Hash、明文密码)
+  注册页(注册)：
+   Toolbar -> 帮助
+   Fab -> 注册/重试
+   //SwipeRefresh -> 刷新注册到的 ID
+   [GitHub 用户名]
+   [选择注册密码]
+   [你需要在 GitHub帐号上发布的Gist 所必须包含的内容]
+   ----
+   详细介绍一下用户注册流程：
+    你需要一个能发布 Public Gist 的 GitHub 帐号 和 你选择的初始密码 /*和 GeekApk 服务器为新用户准备的 ID*/ 和 一个随机字符串
+    首先，将字符串 SHA-1 Hash, 得到 &geekapk_auth@{}!& 里的内容
+    //然后，获取最新的用户 ID, 得到 &geekapk_uid@{}!& 里的内容
+    然后，让用户发布一个 Public Gist, 官方客户端只接受 GeekApk_Proof.md
+    客户端在合适的时间检查是否有 GeekApk_Proof.md, 如果有, 即可以向服务器发送以下 HTTP 请求：
+    GET /meta/register?auth={SHA1 Hash 之前的随机字符串}&gist={Gist ID}&passwd={Init Hash}
+    API 会返回注册到的用户 ID。
+
+SettingsActivity：
+ 接受一个页面字符串id
+ 时间问题，不作详细描述。
+ 请参考 CoolApk v6 和客户端平台考虑设置选项
+ 本文档中提到可以设置的选项也应该加入，比如底栏
+ About 页面：
+  参考 CoolApk v6, 加入一个 Easter Egg (长按图标)
+  全部用户人数也可以看到。
+
+UserDetailActivity：
+ Pages ->
+  详情(Name Alias EMail Github SuperApp Bio 上线时间 创建时间)：
+   Toolbar -> Follow [打开超级应用(如果有的话显示)] PM
+   [Head]：在 MainActivity 最后一页的那个 Header 差不多
+  动态 应用 跟随 [Star 的应用] [Star 的评论] 历史头像 发布的新闻 创建的应用集 评分
+
+ImageViewActivity：
+ 接受图像数据或图像URL
+ (只要能保存图像就可以了吧...)
+
+NotificationActivity：
+ Toolbar -> 清空
+ [Follow]
+ [@]
+ [回复]
+ [Star]
+ [赞赏]
+ -- PM --
+ ----
+ 唯一还需要解释的就是 GeekApk 的 Post 机制了：
+  这是个自由的收件箱机制，所有用户都可以给其他用户(甚至自己!) 发件.
+  有几个字段可以填写：type、aid、rid
+  有几个是自动生成的：操作人、时间
+  至于上面的几个情况怎么用就不说了 >_> , 怎么协定 API 会告诉你们
+  收件箱同时保留了所有 PM 聊天记录索引。
+  GeekApk PM 机制：
+   1. 每位用户都有一个PM表（私有的），自己可以自由插入记录（在限制内）和删除/查询这个表
+   2. 并且，为了方便管理和扩展，虽然这个表主要用于发送 PM, 也存在一个整形 type 字段。官方客户端只会把 type 字段设置为默认值(空)，你可以自由的通过 type 字段查询自己的消息
+   3. PM 表包含以下字段(排除内部的不谈)：accessable_uid type text time(自动生成无法修改)
+      在 text 中可以自由存放最大可达到 2000 字的 utf-8 字符串，accessable_uid 里你可以选择与一个人共享这个记录，而其他人无权查看。
+   4. GeekApk.org 客户端这样发送 PM：
+      1. 向你的私人表里插入记录， text = (你发送的文字), accessable_uid = (对方 uid), 如果成功，API 会返回索引(服务器决定的)
+      2. 向对方 Post 里发送信息： type = null, aid = (自己的 uid), rid = (PM 表索引)
+      至于对方怎么读取，或者怎么知道你发的所有 PM，我就不说了 >_>
+
+OperationBoxActivity：
+ 展示所有正在执行的任务和更新。
+ 长按以选择项目
+ -- 更新 --
+ -- 事务 --
+ ----
+ [更新]：内部更据已安装列表确定的更新，必须把更新内容按照版本号堆叠。
+  [图标] [应用名] - [更新按钮]
+  [老版本号] '>' [新版本号码] [更新时间] [体积]
+  [更新内容]
+  菜单 -> 打开应用 查看包名 忽略更新 忽略此应用所有更新 刷新本地应用修订
+ [事务]：
+  Toolbar -> 全部继续/暂停按钮 全部删除按钮
+  [图标] [操作名] [暂停/开始按钮]
+  [进度条]
+         [特殊注释]
+  [状态] [进度注释]
+  菜单 -> 删除
+
+PermissionDetailActivity：
+ 接受一个字符串
+ 然后会使用 "\n" 划分项目显示
+ 对于使用 ':' 字符开头的项会根据 Android 内定权限表直接翻译替换
+
+PMActivity：
+ 接受一个 uid
+ 本来就可以参考 Telegram, 如果不知道怎么做可以去 https://github.com/drakeet/TimeMachine 看看
+
+AppManagementActivity：
+ 无需接受任何参数
+ 长按以多选项目
+ 唯一的不同就是软件包状态内部（GeekApk）和外部（Android）不一定相同，所以需要提供更据包名快速刷新市场内部包安装状态的功能。
+ !这个特性（快速匹配）需要提供根据包名和 reversion 查找应用的功能
+ 显示内部无主的已安装软件包，对于已经和本机应用挂钩的软件，不需要显示。
+ 其他：只需要做酷安能做的事就可以了
