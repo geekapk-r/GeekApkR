@@ -16,7 +16,7 @@ name = "geekapkd"
 path = "src/main.rs"
 
 [dependencies]
-lazy_statics = "*"
+lazy_static = "*"
 
 # Web Framework
 rocket = "0.3.6"
