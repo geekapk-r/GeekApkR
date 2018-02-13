@@ -1,6 +1,9 @@
 # GeekApk Rust Server
 
-![https://img.shields.io/travis/geekapk/GeekApkR.svg?style=flat-square](https://travis-ci.org/geekapk/GeekApkR) ![https://img.shields.io/badge/powered-rocket-red.svg?style=flat-square](https://rocket.rs) ![https://img.shields.io/badge/doc-apis-yellow.svg?style=flat-square](API.md) ![https://img.shields.io/badge/doc-frontend-yellow.svg?style=flat-square](Android_UI.txt)
+[![Travis Status](https://img.shields.io/travis/geekapk/GeekApkR.svg?style=flat-square)](https://travis-ci.org/geekapk/GeekApkR)
+[![Rocket Powered](https://img.shields.io/badge/powered-rocket-red.svg?style=flat-square)](https://rocket.rs)
+[![APIs](https://img.shields.io/badge/doc-apis-yellow.svg?style=flat-square)](API.md)
+[![Android UI](https://img.shields.io/badge/doc-frontend-yellow.svg?style=flat-square)](Android_UI.txt)
 
 > Pure android market&community
 
