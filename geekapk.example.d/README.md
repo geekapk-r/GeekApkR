@@ -1,12 +1,12 @@
 # GeekApk Server Example Initialization Data
 
-GeekApk Server needs something like initial categories/apps, initial users
+GeekApk Server needs something like initial categories/apps, initial users.
 
 Here is one used by geekapk.org GeekApk Server
 
 ## example server config
 
-GeekApk Server searches for server config([geekapk.ini](geekapk.ini)) in its startup dir.
+GeekApk Server searches for server config([geekapk.ini](geekapk.example.ini)) in its startup dir.
 
 ## internal picture storage
 

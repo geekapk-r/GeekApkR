@@ -234,7 +234,7 @@ MainActivity：
    [github]：用户的 GitHub 用户名 { click = 打开 GitHub 链接
    [email icon]：如果用户存在邮箱就显示 { click = 显示邮箱信息
    [online?]：显示上次上线时间 { click = 显示隐身状态/更新上线时间对话框 隐身状态：关闭 WebSocket 连接 \
-   (服务端发送更新提示提供了 FPM 和 WebSocket 两种方式，WebSocket 连接活跃意味着用户在线，上线 API 返回当前时间，否则，返回上一次更新的时间。 \ 
+   (服务端发送更新提示提供了 FPM 和 WebSocket 两种方式，WebSocket 连接活跃意味着用户在线，上线 API 返回当前时间，否则，返回上一次更新的时间。 \
    客户端每隔 5m 都会更新是上线时间，隐身模式下，不更新上线时间、断开 WebSocket。)
   [修改资料]：对话框 %TextField[ 用户名 别名 邮箱 ] < 修改密码 修改头像 取消 更新
   [星标消息]：UserDetailActivity, 你, Star 的消息的快捷方式。
@@ -279,7 +279,7 @@ MessageDetailActivity：
  Comment 回复应该放在这个 Comment 下方，消息查看是递归模式的，只能多看两层，不能同时看回复的回复的回复（晕）。
  换句话说你能看这个评论，它的回复，它的回复的回复。它的回复和顶层评论一样,都只能看一层回复。
   (A :顶层评论
-   (回复了 A: emmm <- 点开 
+   (回复了 A: emmm <- 点开
      ~~ (回复了上面的: hhhh 不可见! ~~
    (回复了 A
   ->
@@ -289,7 +289,7 @@ MessageDetailActivity：
 
 AppDetailActivity：
  接受一个 aid，还可以接受默认的页面和评论排行/Filter，覆盖的 AppLayout 和操作名/reversion
- 应用模型是 GeekApk 里最复杂的模型之一，因为保存的数据很多。 
+ 应用模型是 GeekApk 里最复杂的模型之一，因为保存的数据很多。
  Basic AppLayout：
   Title := 应用名称
   Fab := 下载应用
@@ -330,7 +330,7 @@ AppDetailActivity：
 
    Star：
     ^(Users)^ 显示所有 Star 了的用户
-   
+
  Album AppLayout：
   应用主显示新增应用 Fab
   建议客户端设计者每人都临时下载一个 CA v6, 方便抄界面 （笑）

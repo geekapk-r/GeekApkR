@@ -1,0 +1,15 @@
+language: rust
+rust:
+  - nightly
+
+cache: cargo
+
+services:
+  - mysql
+
+before_install:
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS test;'
+
+script:
+  - cp .env.travis .env
+  - cargo test --verbose

@@ -16,4 +16,4 @@
 
 7. create a systemd service for GeekServer, start it.
 
-8. proxy the HTTP API using [proxy htaccess](proxy_htaccess)
+8. proxy the HTTP API using [proxy htaccess](proxy_htaccess) (if you are using reverse proxies like CloudFlare, try proxy_apache/proxy_nginx)

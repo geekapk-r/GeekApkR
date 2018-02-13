@@ -1,4 +1,6 @@
-# GeekServer
+# GeekApk Rust Server
+
+![https://img.shields.io/travis/geekapk/GeekApkR.svg?style=flat-square](https://travis-ci.org/geekapk/GeekApkR) ![https://img.shields.io/badge/powered-rocket-red.svg?style=flat-square](https://rocket.rs) ![https://img.shields.io/badge/doc-apis-yellow.svg?style=flat-square](API.md) ![https://img.shields.io/badge/doc-frontend-yellow.svg?style=flat-square](Android_UI.txt)
 
 > Pure android market&community
 
@@ -48,6 +50,16 @@ cargo build
 See [GeekApk Dev](https://geekapk.org/dev/) or [GeekApkR Wiki](wiki/)
 
 ## :rocket: Testing
+
+Prepare for MySQL database:
+
+```sql
+CREATE USER 'geekapk'@'localhost' IDENTIFIED BY 'password';
+
+CREATE DATABASE geekapk;
+
+GRANT ALL PRIVILEGES ON geekapk.* TO 'geekapk'@'localhost' WITH GRANT OPTION;
+```
 
 ```bash
 # Prepare for environment
