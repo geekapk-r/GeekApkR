@@ -24,7 +24,7 @@ GeekURL： 类似这样的一种 Key-Value字符串 表示形式 \
 搜索：搜索应用 := 在应用名、别名、包名、描述中查找 \
       搜索用户 := 查找用户名、用户别名、bio \
       搜索评论 := 查找消息内容 \
-      搜索全站 := (不允许) \
+      搜索全站 := 在全局消息表中搜索 \
       搜索好友圈 := (不允许) \
       搜索用户动态 := (在对应应用中搜索 uid 为这个用户 uid 的评论) \
       新闻/头条/话题 := 相应分类/应用中搜索
@@ -97,7 +97,7 @@ GeekURL： 类似这样的一种 Key-Value字符串 表示形式 \
   [special]：应用可以填写特殊字符串，将以特殊颜色 '[' special_string ']' 展现
   [操作按钮]：应用可以填写用于替换默认 "安装" 和 "卸载" 的字符串 { click = 执行安装或卸载使用的 GeekURL longclick = 菜单 [ 刷新安装状态 运行安装 运行卸载 重新安装 ]
  App_With_Infos：
-  Filter -> category、最低 Android API 范围、更新时间范围、需要 root?(三种情况)、需要触摸屏？、需要特殊框架?、你发布的？
+  Filter -> category、最低 Android API 范围、更新间隔、需要 root?(三种情况)、需要触摸屏？、需要特殊框架?、你发布的？
   排行 -> star count replies rank rank_avg created updated size !允许倒序
   [App_With_Info 列表]
 
@@ -397,6 +397,7 @@ AppEditorActivity：
   Versioned String(max=10k, utf-8) removeurl
   GraphSet(max=500k, maxlen=10) previews
   Versioned Positive Integer8 apimin
+  Versioned Positive Integer8 apitar
   Versioned Positive Integer size
   Versioned String(max=30) version
   Versioned Nonnull Positive Integer16 reversion
