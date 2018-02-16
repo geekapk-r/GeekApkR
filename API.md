@@ -62,16 +62,17 @@
 
 `GET /comment/pops/<start>-<end>?filter=<filter>&[r]sort=<sort>` -> JSON { [id] }
 
-`GET /comment/target/<target>?filter=<filter>&[r]sort=<sort>` -> JSON { [id] }
+`GET /comment/target/<target>/<start>-<end>?filter=<filter>&[r]sort=<sort>` -> JSON { [id] }
 
 filter -> user userlist
+
 sort -> star count replies created updated
 
 > Search
 
-`POST /comment/search?filter=<filter>&[r]sort=<sort>` body=text -> JSON { [id] }
+`POST /comment/search?[inapp=<aid>&]filter=<filter>&[r]sort=<sort>` body=text -> JSON { [id] }
 
-`POST /comment/searchpops?filter=<filter>&[r]sort=<sort>` body=text -> JSON { [id] }
+`POST /comment/searchpops?[inapp=<aid>&]filter=<filter>&[r]sort=<sort>` body=text -> JSON { [id] }
 
 ## User
 
@@ -123,6 +124,8 @@ sort -> ctime online follow followed
 
 `GET /app/<aid>/<attr>` -> attr
 
+`GET /app/all[?sort=<sort>&filter=<f>]` -> JSON { [id] }
+
 > Update
 
 `PUT /app/<aid>/<attr>?uid=<uid>&tok=<token>` body=value -> JSON { status, reason }
@@ -133,8 +136,35 @@ sort -> ctime online follow followed
 
 > Search
 
-`GET /app/search` body=text -> JSON { [id] }
-`GET /app/search/<uid>` -> JSON { [id] }
+`GET /app/search[?sort=<sort>&filter=<f>]` body=text -> JSON { [id] }
+
+`GET /app/search/<uid>[?sort=<sort>&filter=<f>]` -> JSON { [id] }
+
+`GET /app/search/category/<id>[?sort=<sort>&filter=<f>]` body=text -> JSON { [id] }
+
+sort -> star count replies rank rank_avg created updated size
+
+filter -> apimin、updated、root、touch、framework、user
+
+> Image
+
+`GET /img/app/<aid>` -> JSON { [{rev, created_at}] }
+
+`GET /img/app/<aid>/<rev>` -> File
+
+`POST /img/app/<aid>/<rev>?tok=<token>` -> JSON { status, reason }
+
+`DELETE /img/app/<uid>/<rev>?tok=<token>` -> JSON { status, reason }
+
+> Preview
+
+`GET /img/prev/<aid>` -> JSON { [{slots}] }
+
+`GET /img/prev/<aid>/<slot#>` -> File
+
+`POST /img/prev/<aid>/<slot#>?tok=<token>` -> JSON { status, reason }
+
+`DELETE /img/prev/<aid>/<slot#>?tok=<token>` -> JSON { status, reason }
 
 ## App Update
 
@@ -143,6 +173,8 @@ sort -> ctime online follow followed
 `POST /update/<aid>?uid=<uid>&tok=<token>` body=JSON { graph_flag, name, alias, optbtn, installurl, removeurl, apimin, apitar, size, version, reversion, updates, perm } -> JSON { reversion, status, reason }
 
 > Read
+
+`GET /update/<aid>/` -> JSON { [rev] }
 
 `GET /update/<aid>/<rev>` -> Data
 
@@ -222,6 +254,18 @@ sort -> ctime online follow followed
 
 `DELETE /headline/<id>?uid=<uid>&tok=<token>` -> ...
 
+> Search
+
+`POST /headline/search` body=text -> JSON { [ids] }
+
+> Image
+
+`GET /img/headline/<id>` -> File
+
+`POST /img/headline/<id>?uid=<uid>&tok=<token>` -> JSON { status, reason }
+
+`DELETE  /img/headline/<id>?uid=<uid>&tok=<token>` -> JSON { status, reason }
+
 ## Post
 
 > Create
@@ -258,11 +302,13 @@ sort -> ctime online follow followed
 
 > Read
 
-`GET /mrc/<uid>?[sort=r&]tok=<token>` -> JSON { [{cmid, created_at}] }
+`GET /mrc/<uid>/[<start>-<end>]?[sort=r&]tok=<token>` -> JSON { [{cmid, created_at}] }
 
 > DELETE
 
 `DELETE /mrc/<uid>?created=<created_at>&tok=<token>` -> JSON { status, reason }
+
+`DELETE /mrc/<uid>?created_to=<created_at>&tok=<token>` -> JSON { [cmid], status, reason }
 
 ## App Star
 
@@ -379,3 +425,15 @@ sort -> ctime online follow followed
 > Add blame
 
 `POST /meta/blame/<aid>[/<rev>]?uid=<uid>&tok=<token>` body=text -> JSON { status, reason }
+
+## Socket
+
+`WS /realtime[/<uid>?tok=<token>]`
+
++ HEADLINE
++ POST
++ NEWAPP
++ NEWUPD
++ NEWTOPIC
++ NEWS
++ NEWRECORD
