@@ -81,7 +81,7 @@ __user__ : 1:N 一个用户可以可以跟随许多用户
 字段
 
 ```sql
-id, name, alias, email, bio, github, superapp, created_at, online_at
+id, name, alias, email, bio, github, superapp, created_at, online_at, followers, followed
 ```
 
 关系
@@ -129,7 +129,7 @@ __user__ : N:1
 字段
 
 ```sql
-graph_flag, badge, label, link, created_at, open
+id, graph_flag, badge, label, link, created_at, open
 ```
 
 ### Post
