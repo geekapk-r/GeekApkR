@@ -171,7 +171,7 @@ __user__ : N:1 许多消息记录属于一个用户
 字段
 
 ```sql
-target user
+target, user, created_at
 ```
 
 关系
@@ -185,7 +185,7 @@ __user__ : N:1 一个用户有许多 Star
 字段
 
 ```sql
-target user
+target, user, created_at
 ```
 
 关系
@@ -199,7 +199,7 @@ __user__ : N:1 一个用户有许多 Star
 字段
 
 ```sql
-target user
+target, user, created_at
 ```
 
 关系
@@ -213,7 +213,7 @@ __user__ : N:1 一个用户有许多赞
 字段
 
 ```sql
-target user
+target, user, created_at
 ```
 
 关系
@@ -227,7 +227,7 @@ __user__ : N:1 一个用户有许多赞
 字段
 
 ```sql
-target user rank
+target, user, rank, created_at
 ```
 
 __app__ : N:1 许多评价属于一个应用

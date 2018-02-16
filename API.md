@@ -428,7 +428,7 @@ filter -> apimin、updated、root、touch、framework、user
 
 ## Socket
 
-`WS /realtime[/<uid>?tok=<token>]`
+> Send /uid ':' token/ to get private notification
 
 + HEADLINE
 + POST

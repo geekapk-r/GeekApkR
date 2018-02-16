@@ -32,9 +32,13 @@ hubcaps = { version = "0.4", optional = true }
 # INI Parse
 rust-ini = "0.10.2"
 
+# WebSocket
+websocket = { version = "0.20.2", optional = true, features = ["sync", "async"] }
+
 [features]
-default = ["gist_auth"]
+default = ["gist_auth", "realtime_msg"]
 gist_auth = ["hubcaps"]
+realtime_msg = ["websocket"]
 
 [[test]]
 name = "tests"
