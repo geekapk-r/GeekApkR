@@ -50,7 +50,7 @@ cargo build
 
 ### Docs
 
-See [GeekApk Dev](https://geekapk.org/dev/) or [GeekApkR Wiki](wiki/)
+See [GeekApk Dev](https://geekapk.org/dev/) or [GeekApkR Wiki](https://github.com/geekapk/GeekApkR/wiki)
 
 ## :rocket: Testing
 
