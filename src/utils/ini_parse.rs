@@ -1,12 +1,8 @@
-extern crate rust-ini;
+extern crate ini;
 
-use rust-ini::*;
+const INIFILE : &'static str = "./geekapk.ini";
 
-const INIFILE :&'static str = "./geekapk.ini";
-
-pub struct ServerConfig {
-
-}
+pub struct ServerConfig {}
 
 pub fn parse_cfg() -> ServerConfig {
     ServerConfig {}
