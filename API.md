@@ -6,6 +6,10 @@
 
 `GET /category` -> categories_tree
 
+> Get Toplevel Categories
+
+`GET /category/top` -> JSON { [category_id] }
+
 > Get All Categories
 
 `GET /category/all` -> JSON { [category_id] }
@@ -58,11 +62,13 @@
 
 > All Comments
 
-`GET /comment/all/<start>-<end>?filter=<filter>&[r]sort=<sort>` -> JSON { [id] }
+`GET /comment/all/<start>-<end>?filter=<filter>&[r]sort=<sort>[&toplev]` -> JSON { [id] }
 
-`GET /comment/pops/<start>-<end>?filter=<filter>&[r]sort=<sort>` -> JSON { [id] }
+`GET /comment/pops/<start>-<end>?filter=<filter>&[r]sort=<sort>[&toplev]` -> JSON { [id] }
 
-`GET /comment/target/<target>/<start>-<end>?filter=<filter>&[r]sort=<sort>` -> JSON { [id] }
+`GET /comment/target/<target>/<start>-<end>?filter=<filter>&[r]sort=<sort>[&toplev]` -> JSON { [id] }
+
+`GET /comment/r/<cmid>[?noextra]` -> JSON { [{id, sender, text, replies_num}] }
 
 filter -> user userlist
 
@@ -140,7 +146,9 @@ sort -> ctime online follow followed
 
 `GET /app/search/<uid>[?sort=<sort>&filter=<f>]` -> JSON { [id] }
 
-`GET /app/search/category/<id>[?sort=<sort>&filter=<f>]` body=text -> JSON { [id] }
+`GET /app/search/category/<id>[?sort=<sort>&filter=<f>&mode=<mode>]` body=text -> JSON { [id] }
+
+mode -> super super_super
 
 sort -> star count replies rank rank_avg created updated size
 

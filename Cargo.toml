@@ -1,22 +1,24 @@
 [package]
 name = "geekapk_r"
 version = "0.1.0"
-publish = false
 authors = ["duangsuse <fedora-opensuse@outlook.com>"]
-license = "AGPL"
+license = "AGPL-3.0"
+
 description = "GeekApk Server"
 readme = "README.md"
 documentation = "https://geekapk.org/dev/serverr"
+
 homepage = "https://geekapk.org"
 repository = "https://github.com/geekapk/GeekApkR"
-keywords = ["android", "community", "server"]
+keywords = ["geekapk", "android", "community", "server"]
+publish = false
 
 [[bin]]
 name = "geekapkd"
 path = "src/main.rs"
 
 [dependencies]
-lazy_static = "*"
+lazy_static = "1.0"
 
 # Web Framework
 rocket = "0.3.6"
@@ -45,4 +47,8 @@ name = "tests"
 
 [badges]
 travis-ci = { repository = "geekapk/GeekApkR" }
-maintenance = { status = "as-is" }
+
+is-it-maintained-issue-resolution = { repository = "geekapk/GeekApkR" }
+is-it-maintained-open-issues = { repository = "geekapk/GeekApkR" }
+
+maintenance = { status = "actively-developed" }

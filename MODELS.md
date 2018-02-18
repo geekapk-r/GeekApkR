@@ -55,7 +55,7 @@ __app__ : N:1 许多更新属于一个应用
 字段
 
 ```sql
-target recommend uid reason created_at
+target, recommend, uid, reason, created_at
 ```
 
 __app__ : N:1 许多推荐属于一个应用
@@ -69,7 +69,7 @@ __user__ : N:1 一个用户有许多推荐
 字段
 
 ```sql
-uid target created_at
+uid, target, created_at
 ```
 
 关系
@@ -117,7 +117,7 @@ __app__ : 1:1
 字段
 
 ```sql
-id sender target cid reply_to text created_at updated_at stars count replies is_pop
+id, sender, target, cid, reply_to, text, created_at, updated_at, stars, count, replies, is_pop
 ```
 
 __app__ : N:1
