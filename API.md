@@ -76,9 +76,9 @@ sort -> star count replies created updated
 
 > Search
 
-`POST /comment/search?[inapp=<aid>&]filter=<filter>&[r]sort=<sort>` body=text -> JSON { [id] }
+`POST /comment/search?[inapp=<aid>&]filter=<filter>&[r]sort=<sort>[&toplev]` body=text -> JSON { [id] }
 
-`POST /comment/searchpops?[inapp=<aid>&]filter=<filter>&[r]sort=<sort>` body=text -> JSON { [id] }
+`POST /comment/searchpops?[inapp=<aid>&]filter=<filter>&[r]sort=<sort>[&toplev]` body=text -> JSON { [id] }
 
 ## User
 
@@ -413,6 +413,10 @@ filter -> apimin、updated、root、touch、framework、user
 > User Register
 
 `GET /meta/register?auth=<auth>&gist=<gistid>&passwd=<inithash>` -> JSON { status, reason, uid }
+
+> New User
+
+`GET /meta/newuser?uid=<uid>&tok=<token>&passwd=<inthash>` -> JSON { status, reason, uid }
 
 > User Reset Password
 
