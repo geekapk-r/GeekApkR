@@ -34,8 +34,6 @@
 
 `DELETE /category/<id>?uid=<uid>&tok=<token>` -> JSON { status, reason }
 
-`GET /category/apps/<id>[?filter=<filter>&sort=<sort>]` -> JSON { [aid] }
-
 ## Comments
 
 > Add Comment
@@ -61,6 +59,8 @@
 `DELETE /comment/delete/<cmid>?uid=<uid>&tok=<token>` -> JSON { status, reason }
 
 > All Comments
+
+`GET /comment/len/<all|pops|target>` -> num
 
 `GET /comment/all/<start>-<end>?filter=<filter>&[r]sort=<sort>[&toplev]` -> JSON { [id] }
 
@@ -212,7 +212,7 @@ filter -> apimin、updated、root、touch、framework、user
 
 > Update
 
-`PUT /recommend/<aid>/<attr>?uid=<uid>&tok=<token>` body=value -> JSON { status, reason }
+`PUT /recommend/<aid>/<ctime>/<attr>?uid=<uid>&tok=<token>` body=value -> JSON { status, reason }
 
 > Delete
 
@@ -284,6 +284,10 @@ filter -> apimin、updated、root、touch、framework、user
 
 `GET /post/me?uid=<uid>&tok=<token>[&type=<type>]` -> JSON { [post] }
 
+> Delete
+
+`DELETE /post/<created_at>?uid=<uid>&tok=<token>`
+
 ## PM
 
 > Create
@@ -296,7 +300,7 @@ filter -> apimin、updated、root、touch、framework、user
 
 `GET /pm/mine?uid=<uid>&tok=<token>[&type=<type>&access=<access_to>]` -> JSON { [pm] }
 
-`GET /pm/shared?uid=<uid>&tok=<token>[&type=<type>&access=<access_to>]` -> JSON { [pm] }
+`GET /pm/shared?uid=<uid>&tok=<token>[&sender=<sender>&type=<type>&access=<access_to>]` -> JSON { [pm] }
 
 > Update
 
@@ -309,6 +313,8 @@ filter -> apimin、updated、root、touch、framework、user
 ## Message Record
 
 > Read
+
+`GET /mrc/<uid>` ident -> record num
 
 `GET /mrc/<uid>/[<start>-<end>]?[sort=r&]tok=<token>` -> JSON { [{cmid, created_at}] }
 
