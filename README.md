@@ -33,8 +33,10 @@ cargo build
 
 ### For Development
 
+> Database config priority: DATABASE_URL, ga_username(=geekapk)&ga_password(=dolphins), geekapk.ini
+
 ```bash
-export ga_username=#(YOUR MYSQL USER FOR GEEKAPK)
+export ga_username=#(YOUR PG USER FOR GEEKAPK)
 export ga_password=#(PASSWORD FOR GEEKAPK DATABASE USER)
 cargo build
 ./target/debug/geekapkd
@@ -54,14 +56,14 @@ See [GeekApk Dev](https://geekapk.org/dev/) or [GeekApkR Wiki](https://github.co
 
 ## :rocket: Testing
 
-Prepare for MySQL database:
+Prepare for Postgres database:
 
 ```sql
-CREATE USER 'geekapk'@'localhost' IDENTIFIED BY 'password';
+CREATE USER geekapk WITH PASSWORD 'dolphins';
 
-CREATE DATABASE geekapk;
+CREATE DATABASE geekapk_db;
 
-GRANT ALL PRIVILEGES ON geekapk.* TO 'geekapk'@'localhost' WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON DATABASE geekapk_db TO geekapk;
 ```
 
 ```bash

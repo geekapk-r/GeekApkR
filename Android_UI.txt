@@ -1,11 +1,18 @@
 !!! 所有界面设计均使用伪代码展现，这个文档决定了 API设计 和 服务端应该保存的内容
 !!! 版本：GeekMarket v0.1.0 'GingerBread'
+!!! 按照计划，第一个 Android客户端 会使用 Ruboto 框架由 Ruby 编写
 
+<delete>
 GeekCode：类似这样的一种 Key-Value字符串 表示形式 \
           '&' key '@' value '!&' \
           一般用于插入在消息中，与插件系统和 Markdown 集成，动态生成内容。 \
           语法上允许嵌套(虽然不常用)，内层的 GeekCode 必须先完成替换。 \
           例子：&em@doge/smile!& &geekapp@12!& &comment@12.2!& &user@1!&
+</delete>
+GeekCode：类似这样的一种 Key-Value字符串 表示形式 \
+          [:key](@:value)
+          GeekCode 不允许嵌套，即使解析它的 Markdown 能够这么做。
+
 GeekURL： 类似这样的一种 Key-Value字符串 表示形式 \
           key ':' value \
           一般用于添加外部资源引用。 与插件系统的 GeekURL Opener 集成。 \
@@ -97,7 +104,7 @@ GeekURL： 类似这样的一种 Key-Value字符串 表示形式 \
   [special]：应用可以填写特殊字符串，将以特殊颜色 '[' special_string ']' 展现
   [操作按钮]：应用可以填写用于替换默认 "安装" 和 "卸载" 的字符串 { click = 执行安装或卸载使用的 GeekURL longclick = 菜单 [ 刷新安装状态 运行安装 运行卸载 重新安装 ]
  App_With_Infos：
-  Filter -> category、最低 Android API 范围、更新间隔、需要 root?(三种情况)、需要触摸屏？、需要特殊框架?、你发布的？
+  Filter -> category、最低 Android API 范围、更新间隔、需要 root?(三种情况[r,o,n])、需要触摸屏？、需要特殊框架?、你发布的？
   排行 -> star count replies rank rank_avg created updated size !允许倒序
   [App_With_Info 列表]
 
@@ -457,7 +464,7 @@ UserDetailActivity：
   详情(Name Alias EMail Github SuperApp Bio 上线时间 创建时间)：
    Toolbar -> Follow [打开超级应用(如果有的话显示)] PM
    [Head]：在 MainActivity 最后一页的那个 Header 差不多
-  动态 应用 跟随 [Star 的应用] [Star 的评论] 历史头像 发布的新闻 创建的应用集 评分
+  动态 应用 跟随 被跟随 [Star 的应用] [Star 的评论] 历史头像 发布的新闻 创建的应用集 评分 推荐 赞
 
 ImageViewActivity：
  接受图像数据或图像URL

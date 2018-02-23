@@ -1,5 +1,21 @@
 # GeekApkR Server APIs
 
+## 基本法
+
+> 按照这个基本法... 选举法去产生... API
+
++ 尽可能遵循 RESTful
+
++ API 参考 [Gaee客户端](https://github.com/geekapk/Gaee) 的模型和方法
+
++ 使用 HTTP 动词代替 URL 中出现的动词
+
++ 请求地址一律为 `<HTTP 动词> /资源名/...`
+
++ 返回数据类型大部分为 `json`，出现异常的情况下返回数据可能包含 message 字段，用于指示错误，并且有一定格式来进一步划分错误： `exception_class: message`
+
++ 为了方便一些情况下的部分数据查询， `attr` 获取功能无需删除。
+
 ## Category
 
 > Get Category Tree

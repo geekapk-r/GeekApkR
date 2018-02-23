@@ -6,10 +6,10 @@ rust:
 cache: cargo
 
 services:
-  - mysql
+  - postgresql
 
-before_install:
-  - mysql -e 'CREATE DATABASE IF NOT EXISTS test;'
+before_script:
+  - psql -c 'create database travis_ci_test;' -U postgres
 
 script:
   - cp .env.travis .env
